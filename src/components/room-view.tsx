@@ -56,21 +56,32 @@ export function RoomView({ roomId }: { roomId?: string }) {
     return () => clearTimeout(timeout);
   }, [mounted, roomId, room, userName, apiKey, autoJoinFailed, setRoom, setParticipantId]);
 
+  const connected = useStore((s) => s.connected);
+
   if (!room) {
     const isAutoJoining = mounted && roomId && userName.trim() && apiKey.trim() && !autoJoinFailed;
     const showLoader = isAutoJoining || (!mounted && roomId);
 
     if (showLoader) {
       return (
-        <div className="flex min-h-screen items-center justify-center" style={{ background: "var(--bg)" }}>
-          <div className="flex flex-col items-center gap-4">
-            <div
-              className="h-6 w-6 animate-spin rounded-full"
-              style={{ border: "2px solid var(--border-subtle)", borderTopColor: "var(--accent)" }}
-            />
-            <p className="text-[13px] animate-pulse" style={{ color: "var(--text-secondary)" }}>
-              Reconnecting...
-            </p>
+        <div className="flex h-screen flex-col" style={{ background: "var(--bg)" }}>
+          <div className="flex items-center gap-3 px-6 py-2.5" style={{ borderBottom: "1px solid var(--border-subtle)" }}>
+            <div className="h-4 w-24 animate-pulse rounded" style={{ background: "var(--surface)" }} />
+            <div className="flex-1" />
+          </div>
+          <div className="flex flex-1 items-center justify-center">
+            <div className="flex flex-col items-center gap-3">
+              <div
+                className="h-5 w-5 animate-spin rounded-full"
+                style={{ border: "2px solid var(--border-subtle)", borderTopColor: "var(--accent)" }}
+              />
+              <p className="text-[12px]" style={{ color: "var(--text-tertiary)" }}>
+                Reconnecting to room...
+              </p>
+            </div>
+          </div>
+          <div className="px-5 py-3" style={{ borderTop: "1px solid var(--border-subtle)" }}>
+            <div className="h-[42px] rounded-xl" style={{ background: "var(--surface)", border: "1px solid var(--border)", opacity: 0.5 }} />
           </div>
         </div>
       );
@@ -84,6 +95,12 @@ export function RoomView({ roomId }: { roomId?: string }) {
         <Sidebar />
       </div>
       <div className="flex flex-1 flex-col min-w-0">
+        {!connected && (
+          <div className="flex items-center justify-center gap-2 py-1.5 text-[11px]" style={{ background: "rgba(255,107,61,0.08)", color: "var(--accent)" }}>
+            <div className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ background: "var(--accent)" }} />
+            Reconnecting...
+          </div>
+        )}
         <RoomHeader />
         <ChatPanel />
       </div>
