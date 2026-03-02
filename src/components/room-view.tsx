@@ -69,10 +69,10 @@ export function RoomView({ roomId }: { roomId?: string }) {
   }, [connected]);
 
   if (!room) {
-    const isAutoJoining = mounted && roomId && userName.trim() && apiKey.trim() && !autoJoinFailed;
-    const showLoader = isAutoJoining || (!mounted && roomId);
+    if (!mounted) return null;
+    const isAutoJoining = roomId && userName.trim() && apiKey.trim() && !autoJoinFailed;
 
-    if (showLoader) {
+    if (isAutoJoining) {
       return (
         <div className="flex h-screen flex-col" style={{ background: "var(--bg)" }}>
           <div className="flex items-center gap-3 px-6 py-2.5" style={{ borderBottom: "1px solid var(--border-subtle)" }}>
