@@ -52,11 +52,20 @@ export function RoomView({ roomId }: { roomId?: string }) {
   }, [mounted, roomId, room, userName, apiKey, autoJoinFailed, setRoom, setParticipantId]);
 
   if (!room) {
-    if (mounted && roomId && userName.trim() && apiKey.trim() && !autoJoinFailed) {
+    const showLoader = (mounted && roomId && userName.trim() && apiKey.trim() && !autoJoinFailed)
+      || (!mounted && roomId);
+
+    if (showLoader) {
       return (
         <div className="flex min-h-screen items-center justify-center" style={{ background: "var(--bg)" }}>
-          <div className="text-center">
-            <p className="text-[13px]" style={{ color: "var(--text-secondary)" }}>Rejoining room...</p>
+          <div className="flex flex-col items-center gap-4">
+            <div
+              className="h-6 w-6 animate-spin rounded-full"
+              style={{ border: "2px solid var(--border-subtle)", borderTopColor: "var(--accent)" }}
+            />
+            <p className="text-[13px] animate-pulse" style={{ color: "var(--text-secondary)" }}>
+              Reconnecting...
+            </p>
           </div>
         </div>
       );
