@@ -3,6 +3,7 @@ import { query, type Query } from "@anthropic-ai/claude-agent-sdk";
 interface StreamCallbacks {
   onTextDelta: (text: string) => void;
   onToolStart: (toolId: string, toolName: string) => void;
+  onToolInput: (toolId: string, input: string) => void;
   onToolEnd: (toolId: string, output: string) => void;
 }
 
@@ -101,6 +102,8 @@ export class AgentSession {
         } else if (event.type === "content_block_stop") {
           const toolId = currentToolIds.get(String(event.index));
           if (toolId) {
+            const inputJson = toolInputBuffers.get(toolId) || "";
+            if (inputJson) callbacks.onToolInput(toolId, inputJson);
             currentToolIds.delete(String(event.index));
           }
         }

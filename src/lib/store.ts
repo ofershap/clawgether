@@ -51,8 +51,7 @@ interface AppState {
   updateToolCall: (
     messageId: string,
     toolCallId: string,
-    output: string,
-    status: "done" | "error"
+    update: { input?: string; output?: string; status?: "done" | "error" }
   ) => void;
   setQueue: (queue: QueuedMessage[]) => void;
   updateParticipant: (participant: Participant) => void;
@@ -163,14 +162,16 @@ export const useStore = create<AppState>((set) => ({
       ),
     })),
 
-  updateToolCall: (messageId, toolCallId, output, status) =>
+  updateToolCall: (messageId, toolCallId, update) =>
     set((state) => ({
       messages: state.messages.map((m) =>
         m.id === messageId
           ? {
               ...m,
               toolCalls: m.toolCalls.map((tc) =>
-                tc.id === toolCallId ? { ...tc, output, status } : tc
+                tc.id === toolCallId
+                  ? { ...tc, ...(update.input !== undefined && { input: update.input }), ...(update.output !== undefined && { output: update.output }), ...(update.status !== undefined && { status: update.status }) }
+                  : tc
               ),
             }
           : m

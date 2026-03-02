@@ -69,8 +69,8 @@ export function useSocketEvents() {
       addToolCall(messageId, toolCall);
     });
 
-    socket.on("message:toolCallUpdate", ({ messageId, toolCallId, output, status }) => {
-      updateToolCall(messageId, toolCallId, output, status);
+    socket.on("message:toolCallUpdate", ({ messageId, toolCallId, input, output, status }) => {
+      updateToolCall(messageId, toolCallId, { input, output, status });
     });
 
     socket.on("queue:update", (queue) => {

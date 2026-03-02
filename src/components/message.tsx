@@ -44,9 +44,36 @@ function AgentAvatar({ size = 32 }: { size?: number }) {
   );
 }
 
+function toolSummary(name: string, input: string): string | null {
+  if (!input) return null;
+  try {
+    const parsed = JSON.parse(input);
+    const shortPath = (p: string) => {
+      const parts = p.split("/");
+      return parts.length > 3 ? `.../${parts.slice(-3).join("/")}` : p;
+    };
+    if (name === "Read" || name === "read_file") return shortPath(parsed.path || parsed.file_path || "");
+    if (name === "Write" || name === "write_file" || name === "Edit" || name === "edit_file") return shortPath(parsed.path || parsed.file_path || "");
+    if (name === "Bash" || name === "bash" || name === "execute_command") {
+      const cmd = parsed.command || parsed.cmd || "";
+      return cmd.length > 80 ? cmd.slice(0, 80) + "…" : cmd;
+    }
+    if (name === "Glob" || name === "glob") return parsed.pattern || parsed.glob_pattern || "";
+    if (name === "Grep" || name === "grep" || name === "Search" || name === "search") return parsed.pattern || parsed.query || "";
+    if (name === "LS" || name === "list_directory") return shortPath(parsed.path || "");
+    if (parsed.path) return shortPath(parsed.path);
+    if (parsed.command) {
+      const cmd = parsed.command;
+      return cmd.length > 80 ? cmd.slice(0, 80) + "…" : cmd;
+    }
+  } catch {}
+  return null;
+}
+
 function ToolCallBlock({ toolCall }: { toolCall: ToolCallInfo }) {
   const [expanded, setExpanded] = useState(false);
   const statusColor = toolCall.status === "done" ? "var(--green)" : toolCall.status === "error" ? "var(--red)" : "var(--accent)";
+  const summary = toolSummary(toolCall.name, toolCall.input);
 
   return (
     <div className="rounded-md" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-subtle)" }}>
@@ -55,9 +82,12 @@ function ToolCallBlock({ toolCall }: { toolCall: ToolCallInfo }) {
         onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.03)"; }}
         onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}>
         {expanded ? <ChevronDown className="h-2.5 w-2.5" style={{ color: "var(--text-tertiary)" }} /> : <ChevronRight className="h-2.5 w-2.5" style={{ color: "var(--text-tertiary)" }} />}
-        <span className="h-1.5 w-1.5 rounded-full" style={{ background: statusColor, ...(toolCall.status === "running" ? { animation: "pulse 2s infinite" } : {}) }} />
-        <span className="font-mono" style={{ color: "var(--text-secondary)" }}>{toolCall.name}</span>
-        {toolCall.status === "running" && <span className="ml-auto animate-pulse text-[10px]" style={{ color: "var(--text-tertiary)" }}>running</span>}
+        <span className="h-1.5 w-1.5 rounded-full shrink-0" style={{ background: statusColor, ...(toolCall.status === "running" ? { animation: "pulse 2s infinite" } : {}) }} />
+        <span className="font-mono shrink-0" style={{ color: "var(--text-secondary)" }}>{toolCall.name}</span>
+        {summary && (
+          <span className="truncate font-mono" style={{ color: "var(--text-tertiary)" }}>{summary}</span>
+        )}
+        {toolCall.status === "running" && <span className="ml-auto shrink-0 animate-pulse text-[10px]" style={{ color: "var(--text-tertiary)" }}>running</span>}
       </button>
       {expanded && (
         <div className="px-2.5 py-1.5" style={{ borderTop: "1px solid var(--border-subtle)" }}>
@@ -68,7 +98,7 @@ function ToolCallBlock({ toolCall }: { toolCall: ToolCallInfo }) {
           ) : toolCall.status === "running" ? (
             <div className="flex items-center gap-1.5 text-[10px]" style={{ color: "var(--text-tertiary)" }}>
               <span className="h-1 w-1 animate-pulse rounded-full" style={{ background: "var(--accent)" }} />
-              Executing...
+              {summary || "Executing..."}
             </div>
           ) : (
             <span className="text-[10px]" style={{ color: "var(--text-tertiary)" }}>No output</span>

@@ -379,7 +379,7 @@ export class RoomManager {
       participantId: null,
       participantName: "Claude",
       content: "",
-      toolCalls: [], contentBlocks: [], textSegments: [],
+      toolCalls: [],
       contentBlocks: [],
       textSegments: [],
       timestamp: Date.now(),
@@ -434,6 +434,15 @@ export class RoomManager {
           this.io.to(roomId).emit("message:toolCall", {
             messageId: assistantMessageId,
             toolCall,
+          });
+        },
+        onToolInput: (toolId: string, input: string) => {
+          const tc = assistantMessage.toolCalls.find((t) => t.id === toolId);
+          if (tc) tc.input = input;
+          this.io.to(roomId).emit("message:toolCallUpdate", {
+            messageId: assistantMessageId,
+            toolCallId: toolId,
+            input,
           });
         },
         onToolEnd: (toolId: string, output: string) => {
@@ -695,6 +704,7 @@ export class RoomManager {
           });
         },
         onToolStart: () => {},
+        onToolInput: () => {},
         onToolEnd: () => {},
       });
 

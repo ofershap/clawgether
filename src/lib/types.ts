@@ -205,8 +205,9 @@ export interface ServerToClientEvents {
   "message:toolCallUpdate": (data: {
     messageId: string;
     toolCallId: string;
-    output: string;
-    status: "done" | "error";
+    input?: string;
+    output?: string;
+    status?: "done" | "error";
   }) => void;
   "queue:update": (queue: QueuedMessage[]) => void;
   "participant:joined": (participant: Participant) => void;
