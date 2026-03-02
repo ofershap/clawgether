@@ -40,11 +40,11 @@
   "dependencies": {
     "@anthropic-ai/claude-agent-sdk": "^0.2.63",
     "clsx": "^2.1.1",
-    "lucide-react": "^0.575.0",
+    "lucide-react": "^0.576.0",
     "nanoid": "^5.1.6",
     "next": "16.1.6",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
     "react-markdown": "^10.1.0",
     "react-syntax-highlighter": "^16.1.1",
     "remark-gfm": "^4.0.1",
@@ -56,11 +56,11 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
+    "@types/node": "^25",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/react-syntax-highlighter": "^15.5.13",
-    "eslint": "~9.39.0",
+    "eslint": "~10.0.2",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
     "typescript": "^5"
