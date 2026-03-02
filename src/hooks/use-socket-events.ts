@@ -25,6 +25,7 @@ export function useSocketEvents() {
     setLastUndo,
     setTypingUsers,
     updateReactions,
+    clearMessages,
   } = useStore();
 
   useEffect(() => {
@@ -109,6 +110,10 @@ export function useSocketEvents() {
       updateReactions(messageId, reactions);
     });
 
+    socket.on("room:cleared", () => {
+      clearMessages();
+    });
+
     return () => {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
@@ -130,11 +135,12 @@ export function useSocketEvents() {
       socket.off("undo:result");
       socket.off("typing:update");
       socket.off("reaction:update");
+      socket.off("room:cleared");
     };
   }, [
     addMessage, appendToMessage, endMessageStream, addToolCall, updateToolCall,
     setQueue, updateParticipant, removeParticipant, updateRoom, setConnected,
     setFileContext, setGitStatus, setTokenUsage, setLintResults, setRepoMap,
-    setMode, setLastUndo, setTypingUsers, updateReactions,
+    setMode, setLastUndo, setTypingUsers, updateReactions, clearMessages,
   ]);
 }

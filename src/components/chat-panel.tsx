@@ -1,10 +1,59 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { Send, Square, Loader2 } from "lucide-react";
+import { Send, Square, Loader2, Users, MessageSquare, GitBranch, Zap } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { getSocket } from "@/lib/socket";
 import { Message } from "./message";
+
+function WelcomeGuide() {
+  const room = useStore((s) => s.room);
+  const onlineCount = room?.participants.filter((p) => p.online).length ?? 0;
+
+  const items = [
+    { icon: Users, title: "Multiplayer", desc: "Everyone in this room shares the same Claude conversation" },
+    { icon: MessageSquare, title: "Just type", desc: "Send a message and Claude responds to the whole room" },
+    { icon: GitBranch, title: "Real files", desc: "Claude reads and edits the project on the host machine" },
+    { icon: Zap, title: "Your key, your usage", desc: "Each message uses the sender's API key" },
+  ];
+
+  return (
+    <div className="flex h-full flex-col items-center justify-center px-6">
+      <div className="flex max-w-md flex-col items-center gap-6">
+        <div className="flex flex-col items-center gap-2">
+          <span className="text-[28px]">🦞</span>
+          <h2 className="text-[16px] font-semibold" style={{ color: "var(--text)" }}>
+            {room?.name || "clawgether"}
+          </h2>
+          {room?.projectPath && (
+            <span className="rounded-md px-2 py-0.5 font-mono text-[11px]" style={{ background: "var(--surface-elevated)", color: "var(--text-tertiary)" }}>
+              {room.projectPath.split("/").slice(-2).join("/")}
+            </span>
+          )}
+          <p className="text-[13px]" style={{ color: "var(--text-secondary)" }}>
+            {onlineCount} dev{onlineCount !== 1 ? "s" : ""} in the room
+          </p>
+        </div>
+
+        <div className="grid w-full grid-cols-2 gap-3">
+          {items.map(({ icon: Icon, title, desc }) => (
+            <div key={title} className="flex flex-col gap-1.5 rounded-xl p-3" style={{ background: "var(--surface)", border: "1px solid var(--border-subtle)" }}>
+              <div className="flex items-center gap-2">
+                <Icon className="h-3.5 w-3.5" style={{ color: "var(--accent)" }} />
+                <span className="text-[12px] font-medium" style={{ color: "var(--text)" }}>{title}</span>
+              </div>
+              <p className="text-[11px] leading-relaxed" style={{ color: "var(--text-tertiary)" }}>{desc}</p>
+            </div>
+          ))}
+        </div>
+
+        <p className="text-center text-[12px]" style={{ color: "var(--text-tertiary)" }}>
+          Type a message below to get started
+        </p>
+      </div>
+    </div>
+  );
+}
 
 function TypingIndicator() {
   const typingUsers = useStore((s) => s.typingUsers);
@@ -153,9 +202,7 @@ export function ChatPanel() {
     <div className="flex h-full flex-col">
       <div className="flex-1 overflow-y-auto">
         {messages.length === 0 ? (
-          <div className="flex h-full flex-col items-center justify-center gap-2" style={{ color: "var(--text-tertiary)" }}>
-            <p className="text-[13px]">Send a message to start. Everyone in the room sees it.</p>
-          </div>
+          <WelcomeGuide />
         ) : (
           <div className="py-1">
             {messages.map((msg) => (

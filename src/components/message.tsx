@@ -46,27 +46,33 @@ function AgentAvatar({ size = 32 }: { size?: number }) {
 
 function ToolCallBlock({ toolCall }: { toolCall: ToolCallInfo }) {
   const [expanded, setExpanded] = useState(false);
+  const statusColor = toolCall.status === "done" ? "var(--green)" : toolCall.status === "error" ? "var(--red)" : "var(--accent)";
+
   return (
-    <div className="mt-2 ml-[44px] rounded-lg" style={{ background: "#1a1a1c", border: "1px solid var(--border)" }}>
+    <div className="rounded-md" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-subtle)" }}>
       <button onClick={() => setExpanded(!expanded)}
-        className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-[12px] transition-colors rounded-lg"
-        onMouseEnter={(e) => { e.currentTarget.style.background = "var(--surface-hover)"; }}
+        className="flex w-full items-center gap-1.5 px-2.5 py-1 text-left text-[11px] transition-colors rounded-md"
+        onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.03)"; }}
         onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}>
-        {expanded ? <ChevronDown className="h-3 w-3" style={{ color: "var(--text-tertiary)" }} /> : <ChevronRight className="h-3 w-3" style={{ color: "var(--text-tertiary)" }} />}
-        <div className="flex h-4 w-4 items-center justify-center rounded-full text-[8px] font-bold"
-          style={{ backgroundColor: toolCall.status === "done" ? "var(--green)" : "var(--accent)", color: "var(--bg)" }}>
-          {toolCall.status === "done" ? "✓" : "⚡"}
-        </div>
-        <span className="font-mono font-semibold" style={{ color: "var(--accent)" }}>{toolCall.name}</span>
-        {toolCall.status === "running" && <span className="ml-auto animate-pulse text-[11px]" style={{ color: "var(--accent)" }}>running</span>}
-        {toolCall.status === "done" && <span className="ml-auto text-[11px]" style={{ color: "var(--green)" }}>done</span>}
-        {toolCall.status === "error" && <span className="ml-auto text-[11px]" style={{ color: "var(--red)" }}>error</span>}
+        {expanded ? <ChevronDown className="h-2.5 w-2.5" style={{ color: "var(--text-tertiary)" }} /> : <ChevronRight className="h-2.5 w-2.5" style={{ color: "var(--text-tertiary)" }} />}
+        <span className="h-1.5 w-1.5 rounded-full" style={{ background: statusColor, ...(toolCall.status === "running" ? { animation: "pulse 2s infinite" } : {}) }} />
+        <span className="font-mono" style={{ color: "var(--text-secondary)" }}>{toolCall.name}</span>
+        {toolCall.status === "running" && <span className="ml-auto animate-pulse text-[10px]" style={{ color: "var(--text-tertiary)" }}>running</span>}
       </button>
-      {expanded && toolCall.output && (
-        <div className="px-3 py-2" style={{ borderTop: "1px solid var(--border-subtle)" }}>
-          <pre className="max-h-48 overflow-auto whitespace-pre-wrap text-[11px] leading-relaxed" style={{ color: "var(--text-tertiary)" }}>
-            {toolCall.output.slice(0, 2000)}{toolCall.output.length > 2000 && "\n... (truncated)"}
-          </pre>
+      {expanded && (
+        <div className="px-2.5 py-1.5" style={{ borderTop: "1px solid var(--border-subtle)" }}>
+          {toolCall.output ? (
+            <pre className="max-h-40 overflow-auto whitespace-pre-wrap text-[10px] leading-relaxed font-mono" style={{ color: "var(--text-tertiary)" }}>
+              {toolCall.output.slice(0, 2000)}{toolCall.output.length > 2000 && "\n... (truncated)"}
+            </pre>
+          ) : toolCall.status === "running" ? (
+            <div className="flex items-center gap-1.5 text-[10px]" style={{ color: "var(--text-tertiary)" }}>
+              <span className="h-1 w-1 animate-pulse rounded-full" style={{ background: "var(--accent)" }} />
+              Executing...
+            </div>
+          ) : (
+            <span className="text-[10px]" style={{ color: "var(--text-tertiary)" }}>No output</span>
+          )}
         </div>
       )}
     </div>
@@ -157,7 +163,7 @@ function Reactions({ messageId, reactions }: { messageId: string; reactions: Rea
 
 function MarkdownContent({ content, isStreaming }: { content: string; isStreaming?: boolean }) {
   return (
-    <div className="prose prose-sm max-w-none prose-p:my-1 prose-pre:my-2 prose-code:before:content-none prose-code:after:content-none">
+    <div className="prose prose-sm max-w-none prose-p:my-2 prose-pre:my-2.5 prose-ul:my-1.5 prose-ol:my-1.5 prose-li:my-0.5 prose-headings:my-2.5 prose-code:before:content-none prose-code:after:content-none">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
@@ -167,19 +173,25 @@ function MarkdownContent({ content, isStreaming }: { content: string; isStreamin
             if (match) {
               return (
                 <SyntaxHighlighter style={oneDark} language={match[1]} PreTag="div"
-                  customStyle={{ margin: 0, borderRadius: "0.5rem", fontSize: "0.8rem", background: "#1a1a1c" }}>
+                  customStyle={{ margin: 0, borderRadius: "0.5rem", fontSize: "12px", lineHeight: "1.6", background: "#1a1a1c" }}>
                   {codeStr}
                 </SyntaxHighlighter>
               );
             }
             return <code className="rounded px-1.5 py-0.5 text-[12px]" style={{ background: "var(--surface)", color: "var(--accent)" }} {...props}>{children}</code>;
           },
-          p({ children }) { return <p className="text-[14px] leading-relaxed" style={{ color: "var(--text)" }}>{children}</p>; },
+          p({ children }) { return <p className="text-[13px] leading-[1.7]" style={{ color: "var(--text-secondary)" }}>{children}</p>; },
+          h1({ children }) { return <h1 className="text-[15px] font-semibold" style={{ color: "var(--text)" }}>{children}</h1>; },
+          h2({ children }) { return <h2 className="text-[14px] font-semibold" style={{ color: "var(--text)" }}>{children}</h2>; },
+          h3({ children }) { return <h3 className="text-[13px] font-semibold" style={{ color: "var(--text)" }}>{children}</h3>; },
           a({ href, children }) {
             return <a href={href} target="_blank" rel="noopener noreferrer" className="underline decoration-1 underline-offset-2" style={{ color: "var(--blue)" }}>{children}</a>;
           },
-          strong({ children }) { return <strong style={{ color: "var(--text)" }}>{children}</strong>; },
-          li({ children }) { return <li className="text-[13px]" style={{ color: "var(--text)" }}>{children}</li>; },
+          strong({ children }) { return <strong className="font-semibold" style={{ color: "var(--text)" }}>{children}</strong>; },
+          li({ children }) { return <li className="text-[13px] leading-[1.6]" style={{ color: "var(--text-secondary)" }}>{children}</li>; },
+          ul({ children }) { return <ul className="list-disc pl-4 space-y-0.5">{children}</ul>; },
+          ol({ children }) { return <ol className="list-decimal pl-4 space-y-0.5">{children}</ol>; },
+          hr() { return <hr className="my-3" style={{ borderColor: "var(--border-subtle)" }} />; },
         }}>
         {content}
       </ReactMarkdown>
@@ -209,7 +221,7 @@ export function Message({ message, participantColor }: MessageProps) {
   const displayColor = participantColor || "#3b82f6";
 
   return (
-    <div className="group px-6 py-3 transition-colors"
+    <div className="group px-6 py-2.5 transition-colors"
       onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.02)"; }}
       onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}>
       <div className="flex gap-3">
@@ -232,13 +244,13 @@ export function Message({ message, participantColor }: MessageProps) {
           {isAssistant ? (
             <MarkdownContent content={message.content} isStreaming={message.isStreaming} />
           ) : (
-            <p className="whitespace-pre-wrap text-[15px] leading-relaxed" style={{ color: "var(--text)" }}>
+            <p className="whitespace-pre-wrap text-[13px] leading-[1.6]" style={{ color: "var(--text)" }}>
               {highlightMentions(message.content)}
             </p>
           )}
 
           {message.toolCalls.length > 0 && (
-            <div className="mt-1.5 space-y-1">
+            <div className="mt-2 space-y-1">
               {message.toolCalls.map((tc) => <ToolCallBlock key={tc.id} toolCall={tc} />)}
             </div>
           )}

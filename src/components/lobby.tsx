@@ -73,7 +73,10 @@ export function Lobby({ initialRoomId }: { initialRoomId?: string }) {
   const [mode, setMode] = useState<"create" | "join">(initialRoomId ? "join" : "create");
   const [authMode, setAuthMode] = useState<AuthMode>("openrouter");
   const [roomName, setRoomName] = useState("");
-  const [projectPath, setProjectPath] = useState("");
+  const [projectPath, setProjectPath] = useState(() => {
+    if (typeof window !== "undefined") return localStorage.getItem("clawgether-project-path") || "";
+    return "";
+  });
   const [joinRoomId, setJoinRoomId] = useState(initialRoomId || "");
   const [showKey, setShowKey] = useState(false);
   const [error, setError] = useState("");
@@ -256,7 +259,10 @@ export function Lobby({ initialRoomId }: { initialRoomId?: string }) {
                     <span className="font-normal normal-case tracking-normal" style={{ color: "var(--text-tertiary)" }}>(optional)</span>
                   </label>
                   <div className="flex gap-2">
-                    <Input value={projectPath} onChange={(e) => setProjectPath(e.target.value)}
+                    <Input value={projectPath} onChange={(e) => {
+                      setProjectPath(e.target.value);
+                      if (e.target.value.trim()) localStorage.setItem("clawgether-project-path", e.target.value);
+                    }}
                       placeholder="/path/to/project" className="flex-1 font-mono text-[12px]" />
                     <button type="button" onClick={() => {
                       const sock = connectSocket();
@@ -270,7 +276,8 @@ export function Lobby({ initialRoomId }: { initialRoomId?: string }) {
                     </button>
                   </div>
                   <FolderBrowser open={showBrowser} onClose={() => setShowBrowser(false)}
-                    onSelect={(path) => setProjectPath(path)} initialPath={projectPath || undefined} />
+                    onSelect={(path) => { setProjectPath(path); localStorage.setItem("clawgether-project-path", path); }}
+                    initialPath={projectPath || undefined} />
                 </div>
               </>
             ) : (

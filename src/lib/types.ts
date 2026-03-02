@@ -183,6 +183,7 @@ export interface ClientToServerEvents {
     data: { path: string },
     cb: (entries: DirEntry[], parentPath: string | null) => void
   ) => void;
+  "room:clear": () => void;
 }
 
 export interface ServerToClientEvents {
@@ -212,5 +213,6 @@ export interface ServerToClientEvents {
   "repoMap:update": (entries: RepoMapEntry[]) => void;
   "typing:update": (users: TypingUser[]) => void;
   "reaction:update": (data: { messageId: string; reactions: Reaction[] }) => void;
+  "room:cleared": () => void;
   error: (message: string) => void;
 }

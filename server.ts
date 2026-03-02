@@ -142,6 +142,11 @@ app.prepare().then(() => {
       roomManager.generateSummary(currentRoomId, currentParticipantName, currentApiKey);
     });
 
+    socket.on("room:clear", () => {
+      if (!currentRoomId) return;
+      roomManager.clearRoom(currentRoomId);
+    });
+
     socket.on("cc:list", (data, cb) => {
       try {
         const sessions = listCCSessions(data.projectPath);

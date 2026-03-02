@@ -68,6 +68,7 @@ interface AppState {
   setLastUndo: (result: UndoResult | null) => void;
   setTypingUsers: (users: TypingUser[]) => void;
   updateReactions: (messageId: string, reactions: Reaction[]) => void;
+  clearMessages: () => void;
 }
 
 export const useStore = create<AppState>((set) => ({
@@ -196,4 +197,13 @@ export const useStore = create<AppState>((set) => ({
         m.id === messageId ? { ...m, reactions } : m
       ),
     })),
+  clearMessages: () =>
+    set({
+      messages: [],
+      queue: [],
+      fileContext: [],
+      tokenUsage: { totalInputTokens: 0, totalOutputTokens: 0, totalCost: 0, messageCount: 0 },
+      lintResults: [],
+      lastUndo: null,
+    }),
 }));

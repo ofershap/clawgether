@@ -62,8 +62,11 @@ export class AgentSession {
     }
 
     const currentToolIds = new Map<string, string>();
+    const toolInputBuffers = new Map<string, string>();
 
     const q: Query = query({ prompt, options: options as Parameters<typeof query>[0]["options"] });
+
+    const seenToolIds = new Set<string>();
 
     for await (const message of q) {
       if (!this.sessionId && message.session_id) {
@@ -78,11 +81,21 @@ export class AgentSession {
             const toolId = event.content_block.id;
             const toolName = event.content_block.name;
             currentToolIds.set(String(event.index), toolId);
-            callbacks.onToolStart(toolId, toolName);
+            toolInputBuffers.set(toolId, "");
+            if (!seenToolIds.has(toolId)) {
+              seenToolIds.add(toolId);
+              callbacks.onToolStart(toolId, toolName);
+            }
           }
         } else if (event.type === "content_block_delta") {
           if (event.delta.type === "text_delta") {
             callbacks.onTextDelta(event.delta.text);
+          } else if (event.delta.type === "input_json_delta") {
+            const toolId = currentToolIds.get(String(event.index));
+            if (toolId) {
+              const prev = toolInputBuffers.get(toolId) || "";
+              toolInputBuffers.set(toolId, prev + event.delta.partial_json);
+            }
           }
         } else if (event.type === "content_block_stop") {
           const toolId = currentToolIds.get(String(event.index));
@@ -91,9 +104,23 @@ export class AgentSession {
           }
         }
       } else if (message.type === "assistant") {
-        for (const block of message.message.content) {
-          if (block.type === "tool_result" || block.type === "tool_use") {
-            continue;
+        for (const block of (message as { message: { content: Array<Record<string, unknown>> } }).message.content) {
+          if (block.type === "tool_use") {
+            const toolId = block.id as string;
+            const toolName = block.name as string;
+            if (!seenToolIds.has(toolId)) {
+              seenToolIds.add(toolId);
+              callbacks.onToolStart(toolId, toolName);
+            }
+          } else if (block.type === "tool_result") {
+            const toolId = block.tool_use_id as string;
+            const rawContent = block.content;
+            const output = typeof rawContent === "string"
+              ? rawContent
+              : Array.isArray(rawContent)
+                ? (rawContent as Array<{ type: string; text?: string }>).map((c) => c.type === "text" ? c.text : "").join("")
+                : JSON.stringify(rawContent);
+            callbacks.onToolEnd(toolId, output.slice(0, 4000));
           }
         }
       } else if (message.type === "result") {

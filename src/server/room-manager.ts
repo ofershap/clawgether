@@ -735,4 +735,24 @@ export class RoomManager {
     state.messageQueue = [];
     this.io.to(roomId).emit("queue:update", []);
   }
+
+  clearRoom(roomId: string) {
+    const state = this.rooms.get(roomId);
+    if (!state) return;
+
+    if (state.agentSession) {
+      state.agentSession.abort();
+    }
+
+    state.room.messages = [];
+    state.room.fileContext = [];
+    state.room.tokenUsage = { totalInputTokens: 0, totalOutputTokens: 0, totalCost: 0, messageCount: 0 };
+    state.agentSession = null;
+    state.messageQueue = [];
+    state.isProcessing = false;
+    state.preMessageCommitHash = null;
+    state.reactions.clear();
+
+    this.io.to(roomId).emit("room:cleared");
+  }
 }
