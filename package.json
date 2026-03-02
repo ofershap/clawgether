@@ -1,7 +1,7 @@
 {
   "name": "clawgether",
   "version": "0.1.0",
-  "description": "Multiplayer coding rooms where multiple developers collaborate with one Claude agent in real-time",
+  "description": "Group coding rooms where multiple developers collaborate with one Claude agent in real-time",
   "author": "Ofer Shapira",
   "license": "MIT",
   "type": "module",
@@ -16,7 +16,7 @@
   "keywords": [
     "claude",
     "claude-code",
-    "multiplayer",
+    "group-coding",
     "pair-programming",
     "mob-programming",
     "collaboration",

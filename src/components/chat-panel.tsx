@@ -11,7 +11,7 @@ function WelcomeGuide() {
   const onlineCount = room?.participants.filter((p) => p.online).length ?? 0;
 
   const items = [
-    { icon: Users, title: "Multiplayer", desc: "Everyone in this room shares the same Claude conversation" },
+    { icon: Users, title: "Group coding", desc: "Everyone in this room shares the same Claude conversation" },
     { icon: MessageSquare, title: "Just type", desc: "Send a message and Claude responds to the whole room" },
     { icon: GitBranch, title: "Real files", desc: "Claude reads and edits the project on the host machine" },
     { icon: Zap, title: "Your key, your usage", desc: "Each message uses the sender's API key" },

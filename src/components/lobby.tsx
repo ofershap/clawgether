@@ -164,7 +164,7 @@ export function Lobby({ initialRoomId }: { initialRoomId?: string }) {
             clawgether
           </h1>
           <p className="mt-1 text-[13px]" style={{ color: "var(--text-secondary)" }}>
-            Multiplayer coding with Claude
+            Group coding with Claude
           </p>
         </div>
 

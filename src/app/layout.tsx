@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "clawgether - Multiplayer coding rooms with Claude",
+  title: "clawgether - Group coding with Claude",
   description:
     "Multiple developers, one AI agent, real-time collaboration. Create a room, invite your team, code together with Claude.",
 };
