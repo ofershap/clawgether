@@ -1,13 +1,13 @@
 <h1 align="center">clawgether</h1>
 
 <p align="center">
-  Your teammate is talking to Claude. You're talking to Claude.<br>
-  You're working on the same project. Neither of you knows what the other asked.<br>
-  <strong>That's the problem.</strong>
+  <strong>Multiple developers. One AI agent. Same conversation.</strong>
 </p>
 
 <p align="center">
-  <em>What if you could just... sit in the same conversation?</em>
+  Your teammate is talking to Claude. You're talking to Claude.<br>
+  Same project. Neither of you knows what the other asked.<br>
+  clawgether puts everyone in the same room.
 </p>
 
 <p align="center">
@@ -26,30 +26,29 @@
 
 ---
 
-## Two Developers, One Agent
+## One Agent, Multiple Devs
 
 Every tool in this space runs multiple AI agents in parallel. More agents, more tokens, more cost, more conflict.
 
-clawgether does the opposite. It puts multiple humans in the same room with one agent.
+clawgether does the opposite. Two or more developers open a browser, join the same room, and talk to Claude together. Everyone sees every message. Responses stream in real-time. When Claude edits a file, everyone sees the diff. When it runs a command, everyone sees the output. Claude knows who said what and tracks context per person.
 
-You and your teammate open a browser, join the same room, and talk to Claude together. You see each other's messages. You watch Claude's responses stream in real-time. When Claude edits a file, both of you see the diff. When it runs a command, both of you see the output. Claude knows who said what, tracks context per person, and responds to the group.
-
-It's a shared AI session. Google Docs for coding conversations.
+A shared AI session. Google Docs for coding conversations.
 
 ```
-You (browser)  ──┐
-                  ├── WebSocket ──► Server ──► Claude Agent SDK
-Friend (browser) ─┘                              │
-                                                  ▼
-                                          Your project folder
-                                          (read, write, terminal)
+Dev A (browser) ──┐
+Dev B (browser) ──┤
+Dev C (browser) ──┤── WebSocket ──► Server ──► Claude Agent SDK
+      ...         ┘                              │
+                                                 ▼
+                                         Your project folder
+                                         (read, write, terminal)
 ```
 
-The server runs on your machine. Claude operates on a real project folder with full filesystem access. This isn't a chat wrapper pretending to code.
+The server runs on your machine. Claude operates on a real project folder with full filesystem access. Not a chat wrapper.
 
 ---
 
-## Quick Start
+<h2>⚡ Quick Start</h2>
 
 ```bash
 git clone https://github.com/ofershap/clawgether.git
@@ -60,14 +59,14 @@ npm run dev
 
 Open `http://localhost:3847`. Create a room, share the link.
 
-Your friend is remote? One more line:
+Teammate is remote? One more line:
 
 ```bash
 npx ngrok http 3847
 # Share the https://abc123.ngrok-free.app URL
 ```
 
-That's it. They open the link, type their name, and they're in.
+They open the link, type their name, they're in.
 
 ---
 
@@ -87,7 +86,7 @@ That's it. They open the link, type their name, and they're in.
 
 ### The Agent
 
-This is the Claude Agent SDK with full capabilities, not a REST wrapper.
+The Claude Agent SDK with full capabilities, not a REST wrapper.
 
 | | |
 |---|---|
@@ -125,11 +124,11 @@ Keys live in server memory. Never touch disk.
 
 You've tried the alternatives:
 
-- **Screen share** while one person drives. The other person watches, gets bored, checks Slack
+- **Screen share** while one person drives. Everyone else watches, gets bored, checks Slack
 - **Take turns**. Lose context every handoff. "Wait, what did you ask it?"
-- **Separate sessions**. Both talking to Claude about the same project. Duplicate work, contradicting instructions, wasted tokens
+- **Separate sessions**. Everyone talking to Claude about the same project. Duplicate work, contradicting instructions, wasted tokens
 
-clawgether fixes this because the conversation is the collaboration. Both people contribute. Both people see what's happening. One agent, no conflict, no duplication.
+clawgether fixes this because the conversation is the collaboration. Everyone contributes. Everyone sees what's happening. One agent, no conflict, no duplication.
 
 ---
 
