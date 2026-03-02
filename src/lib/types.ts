@@ -25,6 +25,10 @@ export interface Participant {
 
 export type MessageRole = "user" | "assistant" | "system";
 
+export type ContentBlock =
+  | { type: "text"; textIdx: number }
+  | { type: "tool"; toolCallId: string };
+
 export interface ChatMessage {
   id: string;
   roomId: string;
@@ -33,6 +37,8 @@ export interface ChatMessage {
   participantName: string | null;
   content: string;
   toolCalls: ToolCallInfo[];
+  contentBlocks: ContentBlock[];
+  textSegments: string[];
   timestamp: number;
   isStreaming?: boolean;
   tokenCount?: number;

@@ -64,7 +64,7 @@ export function RoomView({ roomId }: { roomId?: string }) {
       setShowDisconnected(false);
       return;
     }
-    const timer = setTimeout(() => setShowDisconnected(true), 3000);
+    const timer = setTimeout(() => setShowDisconnected(true), 15000);
     return () => clearTimeout(timer);
   }, [connected]);
 
@@ -105,13 +105,7 @@ export function RoomView({ roomId }: { roomId?: string }) {
         <Sidebar />
       </div>
       <div className="flex flex-1 flex-col min-w-0">
-        {showDisconnected && (
-          <div className="flex items-center justify-center gap-2 py-1.5 text-[11px]" style={{ background: "rgba(255,107,61,0.08)", color: "var(--accent)" }}>
-            <div className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ background: "var(--accent)" }} />
-            Reconnecting...
-          </div>
-        )}
-        <RoomHeader />
+        <RoomHeader disconnected={showDisconnected} />
         <ChatPanel />
       </div>
     </div>

@@ -31,7 +31,23 @@ export function useSocketEvents() {
   useEffect(() => {
     const socket = getSocket();
 
-    const onConnect = () => setConnected(true);
+    const onConnect = () => {
+      setConnected(true);
+      const currentRoom = useStore.getState().room;
+      const currentUserName = useStore.getState().userName;
+      const currentApiKey = useStore.getState().apiKey;
+      if (currentRoom && currentUserName.trim() && currentApiKey.trim()) {
+        socket.emit(
+          "room:join",
+          { roomId: currentRoom.id, userName: currentUserName.trim(), apiKey: currentApiKey.trim() },
+          (joinedRoom, pid, err) => {
+            if (joinedRoom && pid) {
+              updateRoom(joinedRoom);
+            }
+          }
+        );
+      }
+    };
     const onDisconnect = () => setConnected(false);
 
     socket.on("connect", onConnect);

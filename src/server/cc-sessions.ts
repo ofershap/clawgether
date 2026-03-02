@@ -134,7 +134,7 @@ export function parseCCSession(
           participantId: null,
           participantName: entry.slug || "CC User",
           content: text.slice(0, 5000),
-          toolCalls: [],
+          toolCalls: [], contentBlocks: [], textSegments: [],
           timestamp: new Date(entry.timestamp).getTime() || Date.now(),
         });
       }
@@ -168,7 +168,7 @@ export function parseCCSession(
           participantId: null,
           participantName: "Claude",
           content: cleaned.slice(0, 10000),
-          toolCalls: [],
+          toolCalls: [], contentBlocks: [], textSegments: [],
           timestamp: new Date(entry.timestamp).getTime() || Date.now(),
         };
 

@@ -225,7 +225,7 @@ export function Message({ message, participantColor }: MessageProps) {
     return (
       <div className="px-6 py-2.5">
         <div className="flex items-center gap-2.5">
-          <AgentAvatar size={24} />
+          <AgentAvatar />
           <div className="flex items-center gap-1.5">
             <span className="h-1.5 w-1.5 animate-bounce rounded-full" style={{ background: "var(--accent)", animationDelay: "0ms" }} />
             <span className="h-1.5 w-1.5 animate-bounce rounded-full" style={{ background: "var(--accent)", animationDelay: "150ms" }} />
@@ -258,17 +258,34 @@ export function Message({ message, participantColor }: MessageProps) {
           </div>
 
           {isAssistant ? (
-            <MarkdownContent content={message.content} isStreaming={message.isStreaming} />
+            message.contentBlocks && message.contentBlocks.length > 0 ? (
+              <div className="space-y-2">
+                {message.contentBlocks.map((block, i) => {
+                  if (block.type === "text") {
+                    const text = (message.textSegments || [])[block.textIdx] || "";
+                    if (!text.trim()) return null;
+                    const isLastBlock = i === message.contentBlocks.length - 1;
+                    return <MarkdownContent key={i} content={text} isStreaming={isLastBlock && message.isStreaming} />;
+                  }
+                  const tc = message.toolCalls.find((t) => t.id === block.toolCallId);
+                  if (!tc) return null;
+                  return <ToolCallBlock key={tc.id} toolCall={tc} />;
+                })}
+              </div>
+            ) : (
+              <>
+                <MarkdownContent content={message.content} isStreaming={message.isStreaming} />
+                {message.toolCalls.length > 0 && (
+                  <div className="mt-2 space-y-1">
+                    {message.toolCalls.map((tc) => <ToolCallBlock key={tc.id} toolCall={tc} />)}
+                  </div>
+                )}
+              </>
+            )
           ) : (
             <p className="whitespace-pre-wrap text-[13px] leading-[1.6]" style={{ color: "var(--text)" }}>
               {highlightMentions(message.content)}
             </p>
-          )}
-
-          {message.toolCalls.length > 0 && (
-            <div className="mt-2 space-y-1">
-              {message.toolCalls.map((tc) => <ToolCallBlock key={tc.id} toolCall={tc} />)}
-            </div>
           )}
           {message.diff && message.diff.length > 0 && <DiffBlock diffs={message.diff} />}
           {reactions.length > 0 && <Reactions messageId={message.id} reactions={reactions} />}

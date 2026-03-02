@@ -116,9 +116,20 @@ export const useStore = create<AppState>((set) => ({
 
   appendToMessage: (messageId, chunk) =>
     set((state) => ({
-      messages: state.messages.map((m) =>
-        m.id === messageId ? { ...m, content: m.content + chunk } : m
-      ),
+      messages: state.messages.map((m) => {
+        if (m.id !== messageId) return m;
+        const blocks = [...m.contentBlocks];
+        const segments = [...m.textSegments];
+        const lastBlock = blocks[blocks.length - 1];
+        if (!lastBlock || lastBlock.type !== "text") {
+          const idx = segments.length;
+          segments.push(chunk);
+          blocks.push({ type: "text", textIdx: idx });
+        } else {
+          segments[lastBlock.textIdx] = (segments[lastBlock.textIdx] || "") + chunk;
+        }
+        return { ...m, content: m.content + chunk, contentBlocks: blocks, textSegments: segments };
+      }),
     })),
 
   endMessageStream: (messageId, tokenCount, costEstimate, diff) =>
@@ -143,7 +154,11 @@ export const useStore = create<AppState>((set) => ({
     set((state) => ({
       messages: state.messages.map((m) =>
         m.id === messageId
-          ? { ...m, toolCalls: [...m.toolCalls, toolCall] }
+          ? {
+              ...m,
+              toolCalls: [...m.toolCalls, toolCall],
+              contentBlocks: [...m.contentBlocks, { type: "tool" as const, toolCallId: toolCall.id }],
+            }
           : m
       ),
     })),

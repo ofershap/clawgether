@@ -27,6 +27,8 @@ app.prepare().then(() => {
     {
       cors: { origin: "*" },
       maxHttpBufferSize: 1e7,
+      pingInterval: 30000,
+      pingTimeout: 60000,
     }
   );
 

@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useStore } from "@/lib/store";
 import { getSocket } from "@/lib/socket";
 
-export function RoomHeader() {
+export function RoomHeader({ disconnected }: { disconnected?: boolean }) {
   const room = useStore((s) => s.room);
   const messages = useStore((s) => s.messages);
   const [copied, setCopied] = useState(false);
@@ -36,9 +36,16 @@ export function RoomHeader() {
 
       <div className="flex-1" />
 
-      <span className="rounded px-2 py-0.5 font-mono text-[10px]" style={{ background: "rgba(52,211,153,0.08)", color: "var(--green)" }}>
-        agent connected
-      </span>
+      {disconnected ? (
+        <span className="flex items-center gap-1.5 rounded px-2 py-0.5 font-mono text-[10px]" style={{ background: "rgba(255,107,61,0.08)", color: "var(--accent)" }}>
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ background: "var(--accent)" }} />
+          reconnecting
+        </span>
+      ) : (
+        <span className="rounded px-2 py-0.5 font-mono text-[10px]" style={{ background: "rgba(52,211,153,0.08)", color: "var(--green)" }}>
+          agent connected
+        </span>
+      )}
 
       {messages.length > 0 && (
         <button onClick={handleClear}

@@ -85,7 +85,7 @@ export class RoomManager {
           participantId: null,
           participantName: null,
           content: `Project opened: ${resolvedPath}`,
-          toolCalls: [],
+          toolCalls: [], contentBlocks: [], textSegments: [],
           timestamp: Date.now(),
         });
 
@@ -102,7 +102,7 @@ export class RoomManager {
           participantId: null,
           participantName: null,
           content: `Invalid project path: ${msg}`,
-          toolCalls: [],
+          toolCalls: [], contentBlocks: [], textSegments: [],
           timestamp: Date.now(),
         });
       }
@@ -162,7 +162,7 @@ export class RoomManager {
     if (!state) return null;
 
     const existing = state.room.participants.find(
-      (p) => p.name === userName && !p.online
+      (p) => p.name === userName
     );
 
     if (existing) {
@@ -238,7 +238,7 @@ export class RoomManager {
       participantId: null,
       participantName: null,
       content: `${participantName} switched to ${mode} mode`,
-      toolCalls: [],
+      toolCalls: [], contentBlocks: [], textSegments: [],
       timestamp: Date.now(),
     };
     state.room.messages.push(msg);
@@ -281,7 +281,7 @@ export class RoomManager {
         participantId: null,
         participantName: null,
         content: `${participantName} undid last commit: ${result.hash} - ${result.commitMessage}`,
-        toolCalls: [],
+        toolCalls: [], contentBlocks: [], textSegments: [],
         timestamp: Date.now(),
       };
       state.room.messages.push(sysMsg);
@@ -333,7 +333,7 @@ export class RoomManager {
       participantId,
       participantName: participant.name,
       content,
-      toolCalls: [],
+      toolCalls: [], contentBlocks: [], textSegments: [],
       timestamp: Date.now(),
     };
     state.room.messages.push(userMessage);
@@ -379,7 +379,9 @@ export class RoomManager {
       participantId: null,
       participantName: "Claude",
       content: "",
-      toolCalls: [],
+      toolCalls: [], contentBlocks: [], textSegments: [],
+      contentBlocks: [],
+      textSegments: [],
       timestamp: Date.now(),
       isStreaming: true,
     };
@@ -387,6 +389,15 @@ export class RoomManager {
     this.io.to(roomId).emit("message:new", assistantMessage);
 
     const editedFiles = new Set<string>();
+    let currentTextIdx = -1;
+
+    const ensureTextBlock = () => {
+      if (currentTextIdx === -1 || assistantMessage.contentBlocks[assistantMessage.contentBlocks.length - 1]?.type !== "text") {
+        currentTextIdx = assistantMessage.textSegments.length;
+        assistantMessage.textSegments.push("");
+        assistantMessage.contentBlocks.push({ type: "text", textIdx: currentTextIdx });
+      }
+    };
 
     try {
       if (!state.agentSession) {
@@ -401,13 +412,16 @@ export class RoomManager {
 
       await state.agentSession.sendMessage(taggedPrompt, apiKey, {
         onTextDelta: (text: string) => {
+          ensureTextBlock();
           assistantMessage.content += text;
+          assistantMessage.textSegments[currentTextIdx] += text;
           this.io.to(roomId).emit("message:stream", {
             messageId: assistantMessageId,
             chunk: text,
           });
         },
         onToolStart: (toolId: string, toolName: string) => {
+          currentTextIdx = -1;
           const toolCall = {
             id: toolId,
             name: toolName,
@@ -416,6 +430,7 @@ export class RoomManager {
             status: "running" as const,
           };
           assistantMessage.toolCalls.push(toolCall);
+          assistantMessage.contentBlocks.push({ type: "tool", toolCallId: toolId });
           this.io.to(roomId).emit("message:toolCall", {
             messageId: assistantMessageId,
             toolCall,
@@ -500,7 +515,7 @@ export class RoomManager {
             participantId: null,
             participantName: null,
             content: `Lint errors found:\n${errorSummary}`,
-            toolCalls: [],
+            toolCalls: [], contentBlocks: [], textSegments: [],
             timestamp: Date.now(),
           };
           state.room.messages.push(lintMsg);
@@ -638,7 +653,7 @@ export class RoomManager {
       participantId: null,
       participantName: null,
       content: `${requestedBy} requested a conversation summary...`,
-      toolCalls: [],
+      toolCalls: [], contentBlocks: [], textSegments: [],
       timestamp: Date.now(),
     };
     state.room.messages.push(sysMsg);
@@ -664,7 +679,7 @@ export class RoomManager {
         participantId: null,
         participantName: "Claude",
         content: "",
-        toolCalls: [],
+        toolCalls: [], contentBlocks: [], textSegments: [],
         timestamp: Date.now(),
         isStreaming: true,
       };
@@ -694,7 +709,7 @@ export class RoomManager {
         participantId: null,
         participantName: null,
         content: `Summary failed: ${errMsg}`,
-        toolCalls: [],
+        toolCalls: [], contentBlocks: [], textSegments: [],
         timestamp: Date.now(),
       };
       state.room.messages.push(errorSys);
@@ -713,7 +728,7 @@ export class RoomManager {
       participantId: null,
       participantName: null,
       content: `Imported ${messages.length} messages from a Claude Code session`,
-      toolCalls: [],
+      toolCalls: [], contentBlocks: [], textSegments: [],
       timestamp: Date.now(),
     };
     state.room.messages.push(sysMsg);
