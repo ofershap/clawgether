@@ -26,6 +26,10 @@
 
 ---
 
+![Demo](assets/demo.gif)
+
+---
+
 ## One Agent, Multiple Devs
 
 Every tool in this space runs multiple AI agents in parallel. More agents, more tokens, more cost, more conflict.
