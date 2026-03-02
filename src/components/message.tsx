@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, ChevronRight, Terminal, Bot, User, FileCode, SmilePlus } from "lucide-react";
+import { ChevronDown, ChevronRight, Terminal, FileCode, SmilePlus } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -12,17 +12,52 @@ import { useStore } from "@/lib/store";
 
 const QUICK_REACTIONS = ["👍", "👎", "🎉", "🤔", "❤️", "👀"];
 
+function Avatar({ name, color, size = 32 }: { name: string; color: string; size?: number }) {
+  return (
+    <div className="shrink-0 flex items-center justify-center font-bold"
+      style={{
+        width: size,
+        height: size,
+        borderRadius: size * 0.25,
+        backgroundColor: color,
+        color: "var(--bg)",
+        fontSize: size * 0.4,
+      }}>
+      {name.charAt(0).toUpperCase()}
+    </div>
+  );
+}
+
+function AgentAvatar({ size = 32 }: { size?: number }) {
+  return (
+    <div className="shrink-0 flex items-center justify-center font-bold font-mono"
+      style={{
+        width: size,
+        height: size,
+        borderRadius: size * 0.25,
+        backgroundColor: "var(--accent)",
+        color: "var(--bg)",
+        fontSize: size * 0.45,
+      }}>
+      ⚡
+    </div>
+  );
+}
+
 function ToolCallBlock({ toolCall }: { toolCall: ToolCallInfo }) {
   const [expanded, setExpanded] = useState(false);
   return (
-    <div className="mt-2 rounded-lg" style={{ background: "var(--surface)", border: "1px solid var(--border-subtle)" }}>
+    <div className="mt-2 ml-[44px] rounded-lg" style={{ background: "#1a1a1c", border: "1px solid var(--border)" }}>
       <button onClick={() => setExpanded(!expanded)}
         className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-[12px] transition-colors rounded-lg"
         onMouseEnter={(e) => { e.currentTarget.style.background = "var(--surface-hover)"; }}
         onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}>
         {expanded ? <ChevronDown className="h-3 w-3" style={{ color: "var(--text-tertiary)" }} /> : <ChevronRight className="h-3 w-3" style={{ color: "var(--text-tertiary)" }} />}
-        <Terminal className="h-3 w-3" style={{ color: "var(--text-secondary)" }} />
-        <span className="font-mono" style={{ color: "var(--text-secondary)" }}>{toolCall.name}</span>
+        <div className="flex h-4 w-4 items-center justify-center rounded-full text-[8px] font-bold"
+          style={{ backgroundColor: toolCall.status === "done" ? "var(--green)" : "var(--accent)", color: "var(--bg)" }}>
+          {toolCall.status === "done" ? "✓" : "⚡"}
+        </div>
+        <span className="font-mono font-semibold" style={{ color: "var(--accent)" }}>{toolCall.name}</span>
         {toolCall.status === "running" && <span className="ml-auto animate-pulse text-[11px]" style={{ color: "var(--accent)" }}>running</span>}
         {toolCall.status === "done" && <span className="ml-auto text-[11px]" style={{ color: "var(--green)" }}>done</span>}
         {toolCall.status === "error" && <span className="ml-auto text-[11px]" style={{ color: "var(--red)" }}>error</span>}
@@ -41,7 +76,7 @@ function ToolCallBlock({ toolCall }: { toolCall: ToolCallInfo }) {
 function DiffBlock({ diffs }: { diffs: FileDiff[] }) {
   const [expanded, setExpanded] = useState(false);
   return (
-    <div className="mt-2 rounded-lg" style={{ background: "var(--surface)", border: "1px solid var(--border-subtle)" }}>
+    <div className="mt-2 ml-[44px] rounded-lg" style={{ background: "#1a1a1c", border: "1px solid var(--border)" }}>
       <button onClick={() => setExpanded(!expanded)}
         className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-[12px] transition-colors rounded-lg"
         onMouseEnter={(e) => { e.currentTarget.style.background = "var(--surface-hover)"; }}
@@ -80,7 +115,7 @@ function Reactions({ messageId, reactions }: { messageId: string; reactions: Rea
   };
 
   return (
-    <div className="mt-1.5 flex flex-wrap items-center gap-1">
+    <div className="mt-1.5 ml-[44px] flex flex-wrap items-center gap-1">
       {reactions.map((r) => {
         const isMine = participantId ? r.participantIds.includes(participantId) : false;
         return (
@@ -139,7 +174,7 @@ function MarkdownContent({ content, isStreaming }: { content: string; isStreamin
             }
             return <code className="rounded px-1.5 py-0.5 text-[12px]" style={{ background: "var(--surface)", color: "var(--accent)" }} {...props}>{children}</code>;
           },
-          p({ children }) { return <p className="text-[13px] leading-relaxed" style={{ color: "var(--text)" }}>{children}</p>; },
+          p({ children }) { return <p className="text-[14px] leading-relaxed" style={{ color: "var(--text)" }}>{children}</p>; },
           a({ href, children }) {
             return <a href={href} target="_blank" rel="noopener noreferrer" className="underline decoration-1 underline-offset-2" style={{ color: "var(--blue)" }}>{children}</a>;
           },
@@ -171,27 +206,20 @@ export function Message({ message, participantColor }: MessageProps) {
 
   const isAssistant = message.role === "assistant";
   const reactions = message.reactions || [];
+  const displayColor = participantColor || "#3b82f6";
 
   return (
-    <div className="group px-5 py-2.5 transition-colors"
+    <div className="group px-6 py-3 transition-colors"
       onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.02)"; }}
       onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}>
       <div className="flex gap-3">
         <div className="shrink-0 pt-0.5">
-          {isAssistant ? (
-            <div className="flex h-6 w-6 items-center justify-center rounded-md" style={{ background: "var(--accent)" }}>
-              <Bot className="h-3.5 w-3.5 text-white" />
-            </div>
-          ) : (
-            <div className="flex h-6 w-6 items-center justify-center rounded-md text-[10px] font-bold text-white" style={{ backgroundColor: participantColor || "#3b82f6" }}>
-              {message.participantName?.[0]?.toUpperCase() || <User className="h-3.5 w-3.5" />}
-            </div>
-          )}
+          {isAssistant ? <AgentAvatar /> : <Avatar name={message.participantName || "?"} color={displayColor} />}
         </div>
         <div className="min-w-0 flex-1">
-          <div className="mb-0.5 flex items-baseline gap-2">
-            <span className="text-[13px] font-semibold" style={{ color: "var(--text)" }}>
-              {message.participantName || "Unknown"}
+          <div className="mb-1 flex items-baseline gap-2">
+            <span className="text-[13px] font-semibold" style={{ color: isAssistant ? "var(--accent)" : displayColor }}>
+              {isAssistant ? "Claude Agent" : (message.participantName || "Unknown")}
             </span>
             <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
               {new Date(message.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
@@ -204,7 +232,7 @@ export function Message({ message, participantColor }: MessageProps) {
           {isAssistant ? (
             <MarkdownContent content={message.content} isStreaming={message.isStreaming} />
           ) : (
-            <p className="whitespace-pre-wrap text-[13px] leading-relaxed" style={{ color: "var(--text)" }}>
+            <p className="whitespace-pre-wrap text-[15px] leading-relaxed" style={{ color: "var(--text)" }}>
               {highlightMentions(message.content)}
             </p>
           )}

@@ -20,7 +20,7 @@ function TypingIndicator() {
   else text = `${names.length} people are typing`;
 
   return (
-    <div className="flex items-center gap-2 px-5 py-1.5 text-[12px]" style={{ color: "var(--text-tertiary)" }}>
+    <div className="flex items-center gap-2 px-6 py-1.5 text-[12px]" style={{ color: "var(--text-tertiary)" }}>
       <span className="flex gap-0.5">
         <span className="h-1 w-1 animate-bounce rounded-full" style={{ background: "var(--accent)", animationDelay: "0ms" }} />
         <span className="h-1 w-1 animate-bounce rounded-full" style={{ background: "var(--accent)", animationDelay: "150ms" }} />
@@ -51,8 +51,8 @@ function MentionDropdown({
           style={{ color: "var(--text)" }}
           onMouseEnter={(e) => { e.currentTarget.style.background = "var(--surface-active)"; }}
           onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}>
-          <div className="flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-bold text-white"
-            style={{ backgroundColor: p.color }}>
+          <div className="flex h-5 w-5 items-center justify-center rounded-md text-[9px] font-bold"
+            style={{ backgroundColor: p.color, color: "var(--bg)" }}>
             {p.name[0].toUpperCase()}
           </div>
           <span>{p.name}</span>
@@ -169,13 +169,13 @@ export function ChatPanel() {
       <TypingIndicator />
 
       {userQueueCount > 0 && (
-        <div className="px-5 py-1.5 text-center text-[12px]" style={{ color: "var(--accent)" }}>
+        <div className="px-6 py-1.5 text-center text-[12px]" style={{ color: "var(--accent)" }}>
           <Loader2 className="mr-1 inline h-3 w-3 animate-spin" />
           {userQueueCount} message{userQueueCount > 1 ? "s" : ""} queued
         </div>
       )}
 
-      <div className="relative px-4 py-3" style={{ borderTop: "1px solid var(--border-subtle)" }}>
+      <div className="relative px-5 py-3" style={{ borderTop: "1px solid var(--border-subtle)" }}>
         {mentionQuery !== null && otherParticipants.length > 0 && (
           <MentionDropdown query={mentionQuery} participants={otherParticipants} onSelect={handleMentionSelect} position={mentionPos} />
         )}

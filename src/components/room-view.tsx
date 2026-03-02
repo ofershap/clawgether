@@ -66,12 +66,12 @@ export function RoomView({ roomId }: { roomId?: string }) {
 
   return (
     <div className="flex h-screen" style={{ background: "var(--bg)" }}>
+      <div className="hidden w-[220px] shrink-0 lg:block" style={{ borderRight: "1px solid var(--border-subtle)" }}>
+        <Sidebar />
+      </div>
       <div className="flex flex-1 flex-col min-w-0">
         <RoomHeader />
         <ChatPanel />
-      </div>
-      <div className="hidden w-56 shrink-0 lg:block" style={{ borderLeft: "1px solid var(--border-subtle)" }}>
-        <Sidebar />
       </div>
     </div>
   );
