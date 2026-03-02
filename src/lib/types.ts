@@ -184,6 +184,7 @@ export interface ClientToServerEvents {
     cb: (entries: DirEntry[], parentPath: string | null) => void
   ) => void;
   "room:clear": () => void;
+  "room:delete": (data: { roomId: string }, cb: (success: boolean) => void) => void;
 }
 
 export interface ServerToClientEvents {

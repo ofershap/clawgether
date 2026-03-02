@@ -147,6 +147,10 @@ app.prepare().then(() => {
       roomManager.clearRoom(currentRoomId);
     });
 
+    socket.on("room:delete", (data, cb) => {
+      cb(roomManager.deleteRoom(data.roomId));
+    });
+
     socket.on("cc:list", (data, cb) => {
       try {
         const sessions = listCCSessions(data.projectPath);

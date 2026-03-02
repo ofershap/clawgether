@@ -736,6 +736,15 @@ export class RoomManager {
     this.io.to(roomId).emit("queue:update", []);
   }
 
+  deleteRoom(roomId: string): boolean {
+    const state = this.rooms.get(roomId);
+    if (!state) return false;
+    if (state.agentSession) state.agentSession.abort();
+    this.io.to(roomId).emit("room:cleared");
+    this.rooms.delete(roomId);
+    return true;
+  }
+
   clearRoom(roomId: string) {
     const state = this.rooms.get(roomId);
     if (!state) return;

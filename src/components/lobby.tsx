@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useStore } from "@/lib/store";
 import { connectSocket } from "@/lib/socket";
-import { ArrowRight, Plus, Eye, EyeOff, FolderOpen, Users, ExternalLink, KeyRound, LogIn, MessageSquare } from "lucide-react";
+import { ArrowRight, Plus, Eye, EyeOff, FolderOpen, Users, ExternalLink, KeyRound, LogIn, MessageSquare, X } from "lucide-react";
 import { FolderBrowser } from "./folder-browser";
 
 type AuthMode = "openrouter" | "apikey";
@@ -32,16 +32,28 @@ function RoomList({ onJoin }: { onJoin: (roomId: string) => void }) {
   const [rooms, setRooms] = useState<RoomListItem[]>([]);
   const [loaded, setLoaded] = useState(false);
 
+  const fetchRooms = useCallback(() => {
+    const socket = connectSocket();
+    socket.emit("rooms:list", (r) => { setRooms(r); setLoaded(true); });
+  }, []);
+
   useEffect(() => {
     const socket = connectSocket();
-    const fetchRooms = () => { socket.emit("rooms:list", (r) => { setRooms(r); setLoaded(true); }); };
     if (socket.connected) {
       fetchRooms();
     } else {
       socket.on("connect", fetchRooms);
       return () => { socket.off("connect", fetchRooms); };
     }
-  }, []);
+  }, [fetchRooms]);
+
+  const handleDelete = (e: React.MouseEvent, roomId: string) => {
+    e.stopPropagation();
+    const socket = connectSocket();
+    socket.emit("room:delete", { roomId }, (success) => {
+      if (success) setRooms((prev) => prev.filter((r) => r.id !== roomId));
+    });
+  };
 
   if (!loaded || rooms.length === 0) return null;
 
@@ -52,20 +64,30 @@ function RoomList({ onJoin }: { onJoin: (roomId: string) => void }) {
       </p>
       <div className="space-y-1">
         {rooms.map((room) => (
-          <button key={room.id} onClick={() => onJoin(room.id)}
-            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-all"
+          <div key={room.id} className="group/room flex items-center rounded-xl transition-all"
             style={{ background: "var(--surface)" }}
             onMouseEnter={(e) => { e.currentTarget.style.background = "var(--surface-hover)"; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = "var(--surface)"; }}>
-            <MessageSquare className="h-4 w-4 shrink-0" style={{ color: "var(--accent)" }} />
-            <div className="min-w-0 flex-1">
-              <p className="text-[13px] font-medium" style={{ color: "var(--text)" }}>{room.name}</p>
-              <p className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
-                {room.participantCount} online · {room.messageCount} msgs
-              </p>
-            </div>
-            <ArrowRight className="h-3.5 w-3.5 shrink-0" style={{ color: "var(--text-tertiary)" }} />
-          </button>
+            <button onClick={() => onJoin(room.id)}
+              className="flex flex-1 items-center gap-3 px-3 py-2.5 text-left">
+              <MessageSquare className="h-4 w-4 shrink-0" style={{ color: "var(--accent)" }} />
+              <div className="min-w-0 flex-1">
+                <p className="text-[13px] font-medium" style={{ color: "var(--text)" }}>{room.name}</p>
+                <p className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
+                  {room.participantCount} online · {room.messageCount} msgs
+                </p>
+              </div>
+              <ArrowRight className="h-3.5 w-3.5 shrink-0" style={{ color: "var(--text-tertiary)" }} />
+            </button>
+            <button onClick={(e) => handleDelete(e, room.id)}
+              className="mr-2 flex h-6 w-6 shrink-0 items-center justify-center rounded-md opacity-0 transition-all group-hover/room:opacity-100"
+              style={{ color: "var(--text-tertiary)" }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = "var(--red)"; e.currentTarget.style.background = "rgba(239,68,68,0.1)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text-tertiary)"; e.currentTarget.style.background = "transparent"; }}
+              title="Delete room">
+              <X className="h-3.5 w-3.5" />
+            </button>
+          </div>
         ))}
       </div>
     </div>
