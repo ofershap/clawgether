@@ -36,6 +36,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# cloned repos
+.clawgether-repos/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
