@@ -26,6 +26,8 @@ export function RoomView({ roomId }: { roomId?: string }) {
 
     attemptedRef.current = true;
 
+    const timeout = setTimeout(() => setAutoJoinFailed(true), 5000);
+
     const socket = connectSocket();
 
     const doJoin = () => {
@@ -33,6 +35,7 @@ export function RoomView({ roomId }: { roomId?: string }) {
         "room:join",
         { roomId, userName: userName.trim(), apiKey: apiKey.trim() },
         (joinedRoom, participantId, err) => {
+          clearTimeout(timeout);
           if (err || !joinedRoom || !participantId) {
             setAutoJoinFailed(true);
             return;
@@ -47,13 +50,15 @@ export function RoomView({ roomId }: { roomId?: string }) {
       doJoin();
     } else {
       socket.once("connect", doJoin);
-      socket.once("connect_error", () => setAutoJoinFailed(true));
+      socket.once("connect_error", () => { clearTimeout(timeout); setAutoJoinFailed(true); });
     }
+
+    return () => clearTimeout(timeout);
   }, [mounted, roomId, room, userName, apiKey, autoJoinFailed, setRoom, setParticipantId]);
 
   if (!room) {
-    const showLoader = (mounted && roomId && userName.trim() && apiKey.trim() && !autoJoinFailed)
-      || (!mounted && roomId);
+    const isAutoJoining = mounted && roomId && userName.trim() && apiKey.trim() && !autoJoinFailed;
+    const showLoader = isAutoJoining || (!mounted && roomId);
 
     if (showLoader) {
       return (
