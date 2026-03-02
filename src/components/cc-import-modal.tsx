@@ -18,6 +18,7 @@ export function CCImportModal({ open, onClose, projectPath }: Props) {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (!open || !projectPath) return;
     setLoading(true);
@@ -26,6 +27,7 @@ export function CCImportModal({ open, onClose, projectPath }: Props) {
     const socket = getSocket();
     socket.emit("cc:list", { projectPath }, (result) => { setSessions(result); setLoading(false); });
   }, [open, projectPath]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const handleImport = (sessionId: string) => {
     setImporting(sessionId);

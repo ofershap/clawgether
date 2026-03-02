@@ -17,6 +17,7 @@ export function RoomView({ roomId }: { roomId?: string }) {
   const [mounted, setMounted] = useState(false);
   const attemptedRef = useRef(false);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {

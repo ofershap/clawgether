@@ -12,7 +12,6 @@ import type {
   ChatMessage,
   QueuedMessage,
   FileContextEntry,
-  SessionTokenUsage,
   SessionExport,
   Reaction,
   TypingUser,

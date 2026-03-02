@@ -1,13 +1,19 @@
 <h1 align="center">clawgether</h1>
 
 <p align="center">
-  Multiple developers, one AI agent, real-time. Create a room, invite your team, talk to Claude together. Everyone sees the conversation, the tool calls, the file changes. Like Google Docs, but for AI conversations about code.
+  Your teammate is talking to Claude. You're talking to Claude.<br>
+  You're working on the same project. Neither of you knows what the other asked.<br>
+  <strong>That's the problem.</strong>
+</p>
+
+<p align="center">
+  <em>What if you could just... sit in the same conversation?</em>
 </p>
 
 <p align="center">
   <a href="#quick-start"><img src="https://img.shields.io/badge/Quick_Start-grey?style=for-the-badge" alt="Quick Start" /></a>
   &nbsp;
-  <a href="#features"><img src="https://img.shields.io/badge/Features-grey?style=for-the-badge" alt="Features" /></a>
+  <a href="#what-you-actually-get"><img src="https://img.shields.io/badge/Features-grey?style=for-the-badge" alt="Features" /></a>
   &nbsp;
   <a href="#self-hosting"><img src="https://img.shields.io/badge/Self_Host-grey?style=for-the-badge" alt="Self-Host" /></a>
 </p>
@@ -20,21 +26,15 @@
 
 ---
 
-## The Problem
+## Two Developers, One Agent
 
-You and a teammate both use Claude for coding. You're working on the same project. Right now your options are:
+Every tool in this space runs multiple AI agents in parallel. More agents, more tokens, more cost, more conflict.
 
-- Screen share while one person drives (painful)
-- Take turns, lose context every handoff
-- Both run separate sessions, duplicate work, contradict each other
+clawgether does the opposite. It puts multiple humans in the same room with one agent.
 
-Every tool in this space runs multiple AI agents in parallel. clawgether does the opposite: it puts multiple humans in the same room with one agent. You talk to Claude together, see each other's messages, watch responses stream live.
+You and your teammate open a browser, join the same room, and talk to Claude together. You see each other's messages. You watch Claude's responses stream in real-time. When Claude edits a file, both of you see the diff. When it runs a command, both of you see the output. Claude knows who said what, tracks context per person, and responds to the group.
 
-There's no way to sit in the same AI conversation. clawgether fixes that.
-
----
-
-## How It Works
+It's a shared AI session. Google Docs for coding conversations.
 
 ```
 You (browser)  ──┐
@@ -45,60 +45,7 @@ Friend (browser) ─┘                              │
                                           (read, write, terminal)
 ```
 
-1. Start the server on your machine (or any host)
-2. Create a room, point it at a local project folder
-3. Share the invite link
-4. Your friend opens it, enters their name, done
-5. Both of you chat with the same Claude session
-
-Claude sees who said what. Messages are tagged per person so it tracks context across participants.
-
----
-
-## Features
-
-### Real-Time Collaboration
-
-| Feature | What it does |
-|---------|-------------|
-| **Live streaming** | Claude's responses stream to everyone simultaneously |
-| **Message queue** | Multiple messages get queued, not lost, while Claude is working |
-| **Typing indicators** | See when someone is composing a message |
-| **@mentions** | Tag teammates with autocomplete |
-| **Reactions** | React to messages with emoji |
-| **Browser notifications** | Get notified when someone sends a message while you're in another tab |
-
-### Agent Capabilities
-
-This isn't a chat wrapper. The agent runs through the Claude Agent SDK with full capabilities:
-
-| Capability | Details |
-|-----------|---------|
-| **File operations** | Read, write, create, delete files in your project |
-| **Terminal commands** | Run shell commands, see output |
-| **Git integration** | Branch info, uncommitted changes, one-click undo |
-| **Code/Ask modes** | Switch between full agent mode and discussion-only |
-| **Auto-linting** | Runs your linter after changes |
-| **Repo map** | Extracted symbols from your codebase for context |
-
-### Session Management
-
-| Feature | Details |
-|---------|---------|
-| **Session export** | Download the full conversation as JSON |
-| **Claude Code import** | Load past Claude Code sessions into the room |
-| **Auto-summary** | Generate a conversation summary on demand |
-| **Room persistence** | Rooms survive page refreshes, auto-rejoin via URL |
-| **Cost tracking** | Per-message cost estimates in the sidebar |
-
-### Authentication
-
-| Method | How | Best for |
-|--------|-----|----------|
-| **OpenRouter OAuth** | One-click login, no key needed | Getting started fast |
-| **API Key** | Paste `sk-ant-...` or `sk-or-...` | Direct Anthropic access |
-
-Keys are held in server memory only. Never written to disk.
+The server runs on your machine. Claude operates on a real project folder with full filesystem access. This isn't a chat wrapper pretending to code.
 
 ---
 
@@ -113,12 +60,76 @@ npm run dev
 
 Open `http://localhost:3847`. Create a room, share the link.
 
-### Share with a remote teammate
+Your friend is remote? One more line:
 
 ```bash
 npx ngrok http 3847
 # Share the https://abc123.ngrok-free.app URL
 ```
+
+That's it. They open the link, type their name, and they're in.
+
+---
+
+## What You Actually Get
+
+### The Chat
+
+| | |
+|---|---|
+| **Live streaming** | Claude's responses stream to everyone simultaneously |
+| **Message queue** | Send a message while Claude is mid-thought. It gets queued, not lost |
+| **Typing indicators** | See who's composing. The bouncing dots |
+| **@mentions** | Tag a teammate. Autocomplete kicks in after `@` |
+| **Reactions** | Quick emoji on any message. The small things matter |
+| **Notifications** | Tab title changes, browser notifications when you're alt-tabbed |
+| **Markdown** | Full rendering with syntax highlighting. Code blocks look good |
+
+### The Agent
+
+This is the Claude Agent SDK with full capabilities, not a REST wrapper.
+
+| | |
+|---|---|
+| **File operations** | Read, write, create, delete. Your project, live |
+| **Terminal** | Runs shell commands, you see the output |
+| **Git awareness** | Branch, uncommitted changes, one-click undo |
+| **Code / Ask modes** | Full agent or discussion-only. Toggle in the sidebar |
+| **Auto-lint** | Runs your linter after changes |
+| **Repo map** | Extracted symbols from your codebase. Claude sees structure |
+
+### The Sidebar
+
+| | |
+|---|---|
+| **Participants** | Who's online, who's offline |
+| **Git status** | Branch, ahead count, last commit |
+| **File context** | Which files Claude touched, color-coded by action |
+| **Cost tracking** | Per-message estimates. Know what you're spending |
+| **Session export** | Download the full conversation as JSON |
+| **Claude Code import** | Had a session in Claude Code? Import it into the room |
+| **Auto-summary** | One click to summarize the conversation so far |
+
+### Authentication
+
+| Method | How |
+|--------|-----|
+| **OpenRouter** | One-click OAuth login. Free account, access Claude |
+| **API Key** | Paste `sk-ant-...` or `sk-or-...` directly |
+
+Keys live in server memory. Never touch disk.
+
+---
+
+## Why Not Just Share a Screen?
+
+You've tried the alternatives:
+
+- **Screen share** while one person drives. The other person watches, gets bored, checks Slack
+- **Take turns**. Lose context every handoff. "Wait, what did you ask it?"
+- **Separate sessions**. Both talking to Claude about the same project. Duplicate work, contradicting instructions, wasted tokens
+
+clawgether fixes this because the conversation is the collaboration. Both people contribute. Both people see what's happening. One agent, no conflict, no duplication.
 
 ---
 
@@ -126,38 +137,28 @@ npx ngrok http 3847
 
 | Component | Purpose |
 |-----------|---------|
-| `server.ts` | HTTP + Socket.io server, Next.js custom server |
+| `server.ts` | HTTP + Socket.io server on top of Next.js |
 | `src/server/room-manager.ts` | Room lifecycle, participants, message queue |
-| `src/server/agent-session.ts` | Claude Agent SDK wrapper, streaming, tool calls |
-| `src/server/git-service.ts` | Git status, diff, undo operations |
-| `src/server/lint-runner.ts` | Auto-detect and run project linters |
-| `src/server/repo-map.ts` | Extract symbols from codebase |
+| `src/server/agent-session.ts` | Claude Agent SDK, streaming, tool calls |
+| `src/server/git-service.ts` | Git status, diff, undo |
 | `src/server/cc-sessions.ts` | Parse Claude Code session history |
 | `src/components/` | React UI: chat, sidebar, modals |
 | `src/lib/store.ts` | Zustand client state |
-| `src/lib/types.ts` | Shared TypeScript interfaces |
 
-### Tech Stack
-
-- **Next.js 16** (App Router) with custom server
-- **Socket.io** for real-time WebSocket communication
-- **Claude Agent SDK** (`@anthropic-ai/claude-agent-sdk`) for AI agent
-- **Zustand** for client state
-- **Tailwind CSS** for styling
-- **TypeScript** (strict mode)
+**Stack:** Next.js 16 · Socket.io · Claude Agent SDK · Zustand · Tailwind · TypeScript (strict)
 
 ---
 
 ## Self-Hosting
 
-clawgether needs a persistent server process. Serverless platforms like Vercel won't work because the Claude Agent SDK spawns a long-lived child process and needs filesystem access.
+The agent spawns a long-lived process and needs filesystem access. Serverless won't work.
 
 | Platform | Notes |
 |----------|-------|
-| **Your laptop + ngrok** | Fastest for testing. Zero setup. |
-| **Railway** | Persistent containers. $5/mo free credit. |
-| **Fly.io** | Long-running VMs, persistent volumes. |
-| **Any VPS** | Full control. Docker or bare metal. |
+| **Your laptop + ngrok** | Fastest. Zero setup |
+| **Railway** | Persistent containers. $5/mo free credit |
+| **Fly.io** | Long-running VMs, persistent volumes |
+| **Any VPS** | Full control |
 
 ```bash
 npm run build
@@ -168,19 +169,19 @@ npm start
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for setup and guidelines.
+See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Security
 
-See [SECURITY.md](SECURITY.md) for vulnerability reporting.
+See [SECURITY.md](SECURITY.md).
 
 ## Author
 
 Made by [ofershap](https://github.com/ofershap)
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/ofer-shapira/)
-[![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github&logoColor=white)](https://github.com/ofershap)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=flat&logo=linkedin&logoColor=white)](https://linkedin.com/in/ofershap)
+[![GitHub](https://img.shields.io/badge/GitHub-Follow-181717?style=flat&logo=github&logoColor=white)](https://github.com/ofershap)
 
 ## License
 
-MIT
+[MIT](LICENSE) &copy; [Ofer Shapira](https://github.com/ofershap)

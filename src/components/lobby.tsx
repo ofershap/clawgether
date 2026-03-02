@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useStore } from "@/lib/store";
-import { connectSocket, getSocket } from "@/lib/socket";
+import { connectSocket } from "@/lib/socket";
 import { ArrowRight, Plus, Eye, EyeOff, FolderOpen, Users, ExternalLink, KeyRound, LogIn, MessageSquare } from "lucide-react";
 import { FolderBrowser } from "./folder-browser";
 

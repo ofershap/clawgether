@@ -38,9 +38,11 @@ export function FolderBrowser({ open, onClose, onSelect, initialPath }: FolderBr
     return entries.filter((e) => e.name.toLowerCase().includes(q));
   }, [entries, filter]);
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (open) browse(initialPath || "~");
   }, [open, initialPath, browse]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   if (!open) return null;
 
