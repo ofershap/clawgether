@@ -34,8 +34,13 @@ function RoomList({ onJoin }: { onJoin: (roomId: string) => void }) {
 
   useEffect(() => {
     const socket = connectSocket();
-    const fetch = () => { socket.emit("rooms:list", (r) => { setRooms(r); setLoaded(true); }); };
-    if (socket.connected) fetch(); else socket.once("connect", fetch);
+    const fetchRooms = () => { socket.emit("rooms:list", (r) => { setRooms(r); setLoaded(true); }); };
+    if (socket.connected) {
+      fetchRooms();
+    } else {
+      socket.on("connect", fetchRooms);
+      return () => { socket.off("connect", fetchRooms); };
+    }
   }, []);
 
   if (!loaded || rooms.length === 0) return null;
@@ -135,6 +140,7 @@ export function Lobby({ initialRoomId }: { initialRoomId?: string }) {
         (room, pid, err) => {
           if (err || !room || !pid) { setError(err || "Failed to join"); setJoining(false); return; }
           setRoom(room); setParticipantId(pid); setJoining(false);
+          window.history.pushState({}, "", `/room/${room.id}`);
         });
     };
     if (socket.connected) doJoin();
