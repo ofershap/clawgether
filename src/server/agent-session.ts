@@ -67,6 +67,7 @@ export class AgentSession {
     const q: Query = query({ prompt, options: options as Parameters<typeof query>[0]["options"] });
 
     const seenToolIds = new Set<string>();
+    const completedToolIds = new Set<string>();
 
     for await (const message of q) {
       if (!this.sessionId && message.session_id) {
@@ -114,17 +115,27 @@ export class AgentSession {
             }
           } else if (block.type === "tool_result") {
             const toolId = block.tool_use_id as string;
-            const rawContent = block.content;
-            const output = typeof rawContent === "string"
-              ? rawContent
-              : Array.isArray(rawContent)
-                ? (rawContent as Array<{ type: string; text?: string }>).map((c) => c.type === "text" ? c.text : "").join("")
-                : JSON.stringify(rawContent);
-            callbacks.onToolEnd(toolId, output.slice(0, 4000));
+            if (!completedToolIds.has(toolId)) {
+              completedToolIds.add(toolId);
+              const rawContent = block.content;
+              const output = typeof rawContent === "string"
+                ? rawContent
+                : Array.isArray(rawContent)
+                  ? (rawContent as Array<{ type: string; text?: string }>).map((c) => c.type === "text" ? c.text : "").join("")
+                  : JSON.stringify(rawContent);
+              callbacks.onToolEnd(toolId, output.slice(0, 4000));
+            }
           }
         }
       } else if (message.type === "result") {
         break;
+      }
+    }
+
+    for (const toolId of seenToolIds) {
+      if (!completedToolIds.has(toolId)) {
+        completedToolIds.add(toolId);
+        callbacks.onToolEnd(toolId, "");
       }
     }
   }

@@ -125,7 +125,16 @@ export const useStore = create<AppState>((set) => ({
     set((state) => ({
       messages: state.messages.map((m) =>
         m.id === messageId
-          ? { ...m, isStreaming: false, tokenCount, costEstimate, diff }
+          ? {
+              ...m,
+              isStreaming: false,
+              tokenCount,
+              costEstimate,
+              diff,
+              toolCalls: m.toolCalls.map((tc) =>
+                tc.status === "running" ? { ...tc, status: "done" as const } : tc
+              ),
+            }
           : m
       ),
     })),
