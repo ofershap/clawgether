@@ -57,6 +57,16 @@ export function RoomView({ roomId }: { roomId?: string }) {
   }, [mounted, roomId, room, userName, apiKey, autoJoinFailed, setRoom, setParticipantId]);
 
   const connected = useStore((s) => s.connected);
+  const [showDisconnected, setShowDisconnected] = useState(false);
+
+  useEffect(() => {
+    if (connected) {
+      setShowDisconnected(false);
+      return;
+    }
+    const timer = setTimeout(() => setShowDisconnected(true), 3000);
+    return () => clearTimeout(timer);
+  }, [connected]);
 
   if (!room) {
     const isAutoJoining = mounted && roomId && userName.trim() && apiKey.trim() && !autoJoinFailed;
@@ -95,7 +105,7 @@ export function RoomView({ roomId }: { roomId?: string }) {
         <Sidebar />
       </div>
       <div className="flex flex-1 flex-col min-w-0">
-        {!connected && (
+        {showDisconnected && (
           <div className="flex items-center justify-center gap-2 py-1.5 text-[11px]" style={{ background: "rgba(255,107,61,0.08)", color: "var(--accent)" }}>
             <div className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ background: "var(--accent)" }} />
             Reconnecting...
