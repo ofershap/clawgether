@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="assets/logo.png" alt="clawgether - multiplayer coding rooms with Claude" width="100" height="100" />
-</p>
-
 <h1 align="center">clawgether</h1>
 
 <p align="center">
@@ -35,10 +31,6 @@ You and a teammate both use Claude for coding. You're working on the same projec
 Every tool in this space runs multiple AI agents in parallel. clawgether does the opposite: it puts multiple humans in the same room with one agent. You talk to Claude together, see each other's messages, watch responses stream live.
 
 There's no way to sit in the same AI conversation. clawgether fixes that.
-
-![Demo](assets/demo.gif)
-
-<sub>Demo animation created with <a href="https://github.com/ofershap/remotion-readme-kit">remotion-readme-kit</a></sub>
 
 ---
 
