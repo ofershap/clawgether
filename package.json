@@ -27,6 +27,9 @@
     "developer-tools",
     "websocket"
   ],
+  "bin": {
+    "clawgether": "./bin/clawgether.mjs"
+  },
   "scripts": {
     "dev": "tsx server.ts",
     "build": "next build",
@@ -48,6 +51,7 @@
     "simple-git": "^3.32.3",
     "socket.io": "^4.8.3",
     "socket.io-client": "^4.8.3",
+    "tsx": "^4.21.0",
     "zustand": "^5.0.11"
   },
   "devDependencies": {
@@ -59,7 +63,6 @@
     "eslint": "~9.39.0",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
-    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }
