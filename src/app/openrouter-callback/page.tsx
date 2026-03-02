@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 
-export default function OpenRouterCallback() {
+function CallbackHandler() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -14,9 +14,15 @@ export default function OpenRouterCallback() {
     }
   }, [searchParams]);
 
+  return <p className="text-sm" style={{ color: "var(--text-secondary)" }}>Completing login...</p>;
+}
+
+export default function OpenRouterCallback() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-950">
-      <p className="text-sm text-zinc-400">Completing login... you can close this window.</p>
+    <div className="flex min-h-screen items-center justify-center" style={{ background: "var(--bg)" }}>
+      <Suspense fallback={<p className="text-sm" style={{ color: "var(--text-tertiary)" }}>Loading...</p>}>
+        <CallbackHandler />
+      </Suspense>
     </div>
   );
 }
