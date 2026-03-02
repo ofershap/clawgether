@@ -219,6 +219,22 @@ export function Message({ message, participantColor }: MessageProps) {
   const isAssistant = message.role === "assistant";
   const reactions = message.reactions || [];
   const displayColor = participantColor || "#3b82f6";
+  const isThinking = isAssistant && message.isStreaming && !message.content && message.toolCalls.length === 0;
+
+  if (isThinking) {
+    return (
+      <div className="px-6 py-2.5">
+        <div className="flex items-center gap-2.5">
+          <AgentAvatar size={24} />
+          <div className="flex items-center gap-1.5">
+            <span className="h-1.5 w-1.5 animate-bounce rounded-full" style={{ background: "var(--accent)", animationDelay: "0ms" }} />
+            <span className="h-1.5 w-1.5 animate-bounce rounded-full" style={{ background: "var(--accent)", animationDelay: "150ms" }} />
+            <span className="h-1.5 w-1.5 animate-bounce rounded-full" style={{ background: "var(--accent)", animationDelay: "300ms" }} />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="group px-6 py-2.5 transition-colors"
