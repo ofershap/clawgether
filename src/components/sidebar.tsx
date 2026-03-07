@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import {
-  Circle, GitBranch, Coins,
-  ChevronDown, ChevronRight, FileText, Map,
+  ChevronDown, ChevronRight,
   Undo2, Download, Sparkles, Upload,
   Code2, MessageSquare, FolderOpen,
 } from "lucide-react";

@@ -61,6 +61,7 @@ export function RoomView({ roomId }: { roomId?: string }) {
 
   useEffect(() => {
     if (connected) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShowDisconnected(false);
       return;
     }

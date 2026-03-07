@@ -40,7 +40,7 @@ export function useSocketEvents() {
         socket.emit(
           "room:join",
           { roomId: currentRoom.id, userName: currentUserName.trim(), apiKey: currentApiKey.trim() },
-          (joinedRoom, pid, err) => {
+          (joinedRoom, pid, _err) => {
             if (joinedRoom && pid) {
               updateRoom(joinedRoom);
             }
