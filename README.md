@@ -78,47 +78,47 @@ They open the link, type their name, they're in.
 
 ### The Chat
 
-| | |
-|---|---|
-| **Live streaming** | Claude's responses stream to everyone simultaneously |
-| **Message queue** | Send a message while Claude is mid-thought. It gets queued, not lost |
-| **Typing indicators** | See who's composing. The bouncing dots |
-| **@mentions** | Tag a teammate. Autocomplete kicks in after `@` |
-| **Reactions** | Quick emoji on any message. The small things matter |
-| **Notifications** | Tab title changes, browser notifications when you're alt-tabbed |
-| **Markdown** | Full rendering with syntax highlighting. Code blocks look good |
+|                       |                                                                      |
+| --------------------- | -------------------------------------------------------------------- |
+| **Live streaming**    | Claude's responses stream to everyone simultaneously                 |
+| **Message queue**     | Send a message while Claude is mid-thought. It gets queued, not lost |
+| **Typing indicators** | See who's composing. The bouncing dots                               |
+| **@mentions**         | Tag a teammate. Autocomplete kicks in after `@`                      |
+| **Reactions**         | Quick emoji on any message. The small things matter                  |
+| **Notifications**     | Tab title changes, browser notifications when you're alt-tabbed      |
+| **Markdown**          | Full rendering with syntax highlighting. Code blocks look good       |
 
 ### The Agent
 
 The Claude Agent SDK with full capabilities, not a REST wrapper.
 
-| | |
-|---|---|
-| **File operations** | Read, write, create, delete. Your project, live |
-| **Terminal** | Runs shell commands, you see the output |
-| **Git awareness** | Branch, uncommitted changes, one-click undo |
-| **Code / Ask modes** | Full agent or discussion-only. Toggle in the sidebar |
-| **Auto-lint** | Runs your linter after changes |
-| **Repo map** | Extracted symbols from your codebase. Claude sees structure |
+|                      |                                                             |
+| -------------------- | ----------------------------------------------------------- |
+| **File operations**  | Read, write, create, delete. Your project, live             |
+| **Terminal**         | Runs shell commands, you see the output                     |
+| **Git awareness**    | Branch, uncommitted changes, one-click undo                 |
+| **Code / Ask modes** | Full agent or discussion-only. Toggle in the sidebar        |
+| **Auto-lint**        | Runs your linter after changes                              |
+| **Repo map**         | Extracted symbols from your codebase. Claude sees structure |
 
 ### The Sidebar
 
-| | |
-|---|---|
-| **Participants** | Who's online, who's offline |
-| **Git status** | Branch, ahead count, last commit |
-| **File context** | Which files Claude touched, color-coded by action |
-| **Cost tracking** | Per-message estimates. Know what you're spending |
-| **Session export** | Download the full conversation as JSON |
+|                        |                                                       |
+| ---------------------- | ----------------------------------------------------- |
+| **Participants**       | Who's online, who's offline                           |
+| **Git status**         | Branch, ahead count, last commit                      |
+| **File context**       | Which files Claude touched, color-coded by action     |
+| **Cost tracking**      | Per-message estimates. Know what you're spending      |
+| **Session export**     | Download the full conversation as JSON                |
 | **Claude Code import** | Had a session in Claude Code? Import it into the room |
-| **Auto-summary** | One click to summarize the conversation so far |
+| **Auto-summary**       | One click to summarize the conversation so far        |
 
 ### Authentication
 
-| Method | How |
-|--------|-----|
+| Method         | How                                                |
+| -------------- | -------------------------------------------------- |
 | **OpenRouter** | One-click OAuth login. Free account, access Claude |
-| **API Key** | Paste `sk-ant-...` or `sk-or-...` directly |
+| **API Key**    | Paste `sk-ant-...` or `sk-or-...` directly         |
 
 Keys live in server memory. Never touch disk.
 
@@ -138,15 +138,15 @@ clawgether fixes this because the conversation is the collaboration. Everyone co
 
 ## Architecture
 
-| Component | Purpose |
-|-----------|---------|
-| `server.ts` | HTTP + Socket.io server on top of Next.js |
-| `src/server/room-manager.ts` | Room lifecycle, participants, message queue |
-| `src/server/agent-session.ts` | Claude Agent SDK, streaming, tool calls |
-| `src/server/git-service.ts` | Git status, diff, undo |
-| `src/server/cc-sessions.ts` | Parse Claude Code session history |
-| `src/components/` | React UI: chat, sidebar, modals |
-| `src/lib/store.ts` | Zustand client state |
+| Component                     | Purpose                                     |
+| ----------------------------- | ------------------------------------------- |
+| `server.ts`                   | HTTP + Socket.io server on top of Next.js   |
+| `src/server/room-manager.ts`  | Room lifecycle, participants, message queue |
+| `src/server/agent-session.ts` | Claude Agent SDK, streaming, tool calls     |
+| `src/server/git-service.ts`   | Git status, diff, undo                      |
+| `src/server/cc-sessions.ts`   | Parse Claude Code session history           |
+| `src/components/`             | React UI: chat, sidebar, modals             |
+| `src/lib/store.ts`            | Zustand client state                        |
 
 **Stack:** Next.js 16 · Socket.io · Claude Agent SDK · Zustand · Tailwind · TypeScript (strict)
 
@@ -156,12 +156,12 @@ clawgether fixes this because the conversation is the collaboration. Everyone co
 
 The agent spawns a long-lived process and needs filesystem access. Serverless won't work.
 
-| Platform | Notes |
-|----------|-------|
-| **Your laptop + ngrok** | Fastest. Zero setup |
-| **Railway** | Persistent containers. $5/mo free credit |
-| **Fly.io** | Long-running VMs, persistent volumes |
-| **Any VPS** | Full control |
+| Platform                | Notes                                    |
+| ----------------------- | ---------------------------------------- |
+| **Your laptop + ngrok** | Fastest. Zero setup                      |
+| **Railway**             | Persistent containers. $5/mo free credit |
+| **Fly.io**              | Long-running VMs, persistent volumes     |
+| **Any VPS**             | Full control                             |
 
 ```bash
 npm run build
@@ -185,11 +185,9 @@ See [SECURITY.md](SECURITY.md).
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=flat&logo=linkedin&logoColor=white)](https://linkedin.com/in/ofershap)
 [![GitHub](https://img.shields.io/badge/GitHub-Follow-181717?style=flat&logo=github&logoColor=white)](https://github.com/ofershap)
 
-
 ---
 
 <sub>README built with [README Builder](https://ofershap.github.io/readme-builder/)</sub>
-
 
 ## License
 
